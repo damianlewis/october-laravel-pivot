@@ -11,14 +11,19 @@ class BelongsToManyCustom extends BelongsToMany
     /**
      * Attach a model to the parent.
      *
-     * @param  mixed  $id
-     * @param  array  $attributes
-     * @param  bool   $touch
+     * @param  mixed $id
+     * @param  array $attributes
+     * @param  bool  $touch
+     *
      * @return void
      */
     public function attach($ids, array $attributes = [], $touch = true)
     {
         list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
+
+        if (method_exists($this->getParent(), 'changeAttributes')) {
+            $attributes = $this->getParent()->changeAttributes($this->getRelationName(), $attributes);
+        }
 
         $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         parent::attach($ids, $attributes, $touch);
@@ -28,8 +33,9 @@ class BelongsToManyCustom extends BelongsToMany
     /**
      * Detach models from the relationship.
      *
-     * @param  mixed  $ids
+     * @param  mixed $ids
      * @param  bool  $touch
+     *
      * @return int
      */
     public function detach($ids = null, $touch = true)
@@ -48,9 +54,10 @@ class BelongsToManyCustom extends BelongsToMany
     /**
      * Update an existing pivot record on the table.
      *
-     * @param  mixed  $id
-     * @param  array  $attributes
-     * @param  bool   $touch
+     * @param  mixed $id
+     * @param  array $attributes
+     * @param  bool  $touch
+     *
      * @return int
      */
     public function updateExistingPivot($id, array $attributes, $touch = true)
@@ -66,8 +73,9 @@ class BelongsToManyCustom extends BelongsToMany
      * Cleans the ids and ids with attributes
      * Returns an array with and array of ids and array of id => attributes
      *
-     * @param  mixed  $id
-     * @param  array  $attributes
+     * @param  mixed $id
+     * @param  array $attributes
+     *
      * @return array
      */
     protected function getIdsWithAttributes($id, $attributes = [])
