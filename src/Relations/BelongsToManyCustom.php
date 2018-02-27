@@ -19,11 +19,11 @@ class BelongsToManyCustom extends BelongsToMany
      */
     public function attach($ids, array $attributes = [], $touch = true)
     {
-        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
-
         if (method_exists($this->getParent(), 'changeAttributes')) {
             $attributes = $this->getParent()->changeAttributes($this->getRelationName(), $attributes);
         }
+
+        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
 
         $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         parent::attach($ids, $attributes, $touch);
@@ -62,6 +62,10 @@ class BelongsToManyCustom extends BelongsToMany
      */
     public function updateExistingPivot($id, array $attributes, $touch = true)
     {
+        if (method_exists($this->getParent(), 'changeAttributes')) {
+            $attributes = $this->getParent()->changeAttributes($this->getRelationName(), $attributes);
+        }
+
         list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($id, $attributes);
 
         $this->parent->fireModelEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes);
