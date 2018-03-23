@@ -9,30 +9,23 @@ use October\Rain\Database\Relations\BelongsToMany;
 class BelongsToManyCustom extends BelongsToMany
 {
     /**
-     * Attach a model to the parent.
-     *
-     * @param  mixed $id
-     * @param  array $attributes
-     * @param  bool  $touch
-     *
-     * @return void
+     * {@inheritDoc}
      */
-    public function attach($ids, array $attributes = [], $touch = true)
+    public function attach($id, array $attributes = [], $touch = true)
     {
-        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
+        if (method_exists($this->getParent(), 'changeAttributes')) {
+            list($id, $attributes) = $this->getParent()->changeAttributes($this->getRelationName(), $id, $attributes);
+        }
+
+        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($id, $attributes);
 
         $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
-        parent::attach($ids, $attributes, $touch);
+        parent::attach($id, $attributes, $touch);
         $this->parent->fireModelEvent('pivotAttached', false, $this->getRelationName(), $idsOnly, $idsAttributes);
     }
 
     /**
-     * Detach models from the relationship.
-     *
-     * @param  mixed $ids
-     * @param  bool  $touch
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function detach($ids = null, $touch = true)
     {
@@ -43,25 +36,19 @@ class BelongsToManyCustom extends BelongsToMany
         list($idsOnly) = $this->getIdsWithAttributes($ids);
 
         $this->parent->fireModelEvent('pivotDetaching', true, $this->getRelationName(), $idsOnly);
-        parent::detach($ids, $touch);
+        return parent::detach($ids, $touch);
         $this->parent->fireModelEvent('pivotDetached', false, $this->getRelationName(), $idsOnly);
     }
 
     /**
-     * Update an existing pivot record on the table.
-     *
-     * @param  mixed $id
-     * @param  array $attributes
-     * @param  bool  $touch
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function updateExistingPivot($id, array $attributes, $touch = true)
     {
         list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($id, $attributes);
 
         $this->parent->fireModelEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes);
-        parent::updateExistingPivot($id, $attributes, $touch);
+        return parent::updateExistingPivot($id, $attributes, $touch);
         $this->parent->fireModelEvent('pivotUpdated', false, $this->getRelationName(), $idsOnly, $idsAttributes);
     }
 

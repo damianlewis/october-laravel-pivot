@@ -46,12 +46,22 @@ trait PivotEventTrait
     {
         return array_merge(
             [
-                'creating', 'created', 'updating', 'updated',
-                'deleting', 'deleted', 'saving', 'saved',
-                'restoring', 'restored',
-                'pivotAttaching', 'pivotAttached',
-                'pivotDetaching', 'pivotDetached',
-                'pivotUpdating', 'pivotUpdated',
+                'creating',
+                'created',
+                'updating',
+                'updated',
+                'deleting',
+                'deleted',
+                'saving',
+                'saved',
+                'restoring',
+                'restored',
+                'pivotAttaching',
+                'pivotAttached',
+                'pivotDetaching',
+                'pivotDetached',
+                'pivotUpdating',
+                'pivotUpdated',
             ],
             $this->observables
         );
